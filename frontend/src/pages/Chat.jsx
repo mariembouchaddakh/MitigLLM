@@ -108,7 +108,7 @@ function Chat({ mode }) {
         { content: trimmed },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setMessages((prev) => [...prev, savedUserMsg]);
+      // We don't append savedUserMsg here because it was already added optimistically above.
 
       // 2) Appel au modèle
       console.log("Envoi auto-reply →", {
