@@ -1,0 +1,78 @@
+/* src/pages/Login.css */
+:root {
+  --purple: #5865f2;
+  --purple-dark: #4752c4;
+  --bg: #0d0d10;
+  --glass: rgba(255, 255, 255, 0.05);
+}
+
+.login-container {
+  max-width: 420px;
+  margin: 60px auto;
+  padding: 48px 40px;
+  border-radius: 20px;
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.6s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 32px;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.login-container form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* INPUTS & BUTTON SAME WIDTH */
+.login-container input,
+.login-container button {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.login-container input:focus {
+  border-color: var(--purple);
+  outline: none;
+}
+
+.login-container button {
+  border: none;
+  background: var(--purple);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+.login-container button:hover {
+  background: var(--purple-dark);
+}
+
+.login-container a {
+  color: var(--purple);
+  text-decoration: none;
+}
+.login-container p {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
+}

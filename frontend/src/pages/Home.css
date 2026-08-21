@@ -1,0 +1,77 @@
+/* src/pages/Home.css */
+:root {
+    --purple: #5865f2;
+    --purple-dark: #4752c4;
+    --bg: #0d0d10;
+    --glass: rgba(255, 255, 255, 0.08);
+  }
+  
+  .home-container {
+    height: 100vh;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--bg) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-family: "Inter", sans-serif;
+    text-align: center;
+    padding: 20px;
+    animation: fadeIn 1s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  
+  .home-container h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  
+  .home-container p {
+    margin-bottom: 2.5rem;
+    max-width: 420px;
+    color: #d1d1d1;
+    font-size: 1.1rem;
+  }
+  
+  .home-buttons {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .home-button {
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #fff;
+    background: var(--glass);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background .25s, transform .2s;
+  }
+  .home-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+  .home-button.guest {
+    background: var(--purple);
+  }
+  .home-button.guest:hover {
+    background: var(--purple-dark);
+  }
+  
+  @media (max-width: 480px) {
+    .home-buttons {
+      flex-direction: column;
+      width: 100%;
+      max-width: 260px;
+    }
+  }

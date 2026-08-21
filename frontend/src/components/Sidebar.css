@@ -1,0 +1,66 @@
+:root {
+  --purple: #AA60C8;
+  --purple-dark: #D69ADE;
+}
+
+.sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.sidebar-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s;
+}
+
+.sidebar-new:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.sidebar-inner ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.sidebar-inner li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.sidebar-inner li:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.sidebar-inner li.active {
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  box-shadow: 0 0 12px rgba(170, 96, 200, 0.4);
+}
+
+.sidebar-inner li,
+.sidebar-inner li span {
+  color: #f0e6f8;
+}
+
+.sidebar-inner li.active,
+.sidebar-inner li.active span {
+  color: #fff;
+}

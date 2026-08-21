@@ -1,0 +1,40 @@
+/* src/components/ChatWindow.css */
+.chat-window {
+  flex: 1;
+  padding: 24px 40px 80px;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #0d0d10 0%, #111114 100%);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a2a7f5;
+  font-size: 1.1rem;
+}
+
+.message {
+  max-width: 70%;
+  padding: 14px 18px;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+/* Bot messages */
+.message:not(.me) {
+  background: rgba(214, 154, 222, 0.1); /* Light mauve */
+  color: #ffffff;
+}
+
+/* User messages */
+.message.me {
+  background: rgba(170, 96, 200, 0.7); /* Deeper mauve */
+  align-self: flex-end;
+}
