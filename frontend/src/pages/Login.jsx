@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { api } from "../api";
 import "./Login.css";
 
 function Login() {
@@ -14,30 +14,29 @@ function Login() {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:8000/api/login/", {
+      const res = await api.post("/login/", {
         username,
         password,
       });
 
-      // Stocker les tokens JWT dans localStorage
       localStorage.setItem("access", res.data.access);
       localStorage.setItem("refresh", res.data.refresh);
-
-      // Rediriger vers la page principale (ex: /)
       navigate("/chat");
     } catch (err) {
       if (err.response && err.response.data) {
-        setError(err.response.data.error || "Erreur de connexion");
+        setError(err.response.data.error || err.response.data.detail || "Identifiants invalides");
       } else {
-        setError("Erreur de connexion");
+        setError("Impossible de joindre le serveur Django.");
       }
     }
   };
 
   return (
     <div className="login-container">
-      <h2>Connexion</h2>
-      <form onSubmit={handleLogin}>
+      <form className="auth-card" onSubmit={handleLogin}>
+        <span className="auth-eyebrow">MitigLLM</span>
+        <h2>Connexion analyste</h2>
+        <p>Accède à ton historique et continue tes analyses de mitigation.</p>
         <input
           type="text"
           placeholder="Nom d'utilisateur"
@@ -53,11 +52,11 @@ function Login() {
           required
         />
         <button type="submit">Se connecter</button>
+        {error && <p className="auth-error">{error}</p>}
+        <p className="auth-switch">
+          Pas de compte ? <Link to="/register">Créer un compte</Link>
+        </p>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <p>
-        Pas de compte ? <a href="/register">Créer un compte</a>
-      </p>
     </div>
   );
 }

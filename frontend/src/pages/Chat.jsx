@@ -1,46 +1,44 @@
-// src/pages/Chat.jsx  (instrumenté)
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import ChatWindow from "../components/chatWindow";
 import MessageInput from "../components/MessageInput";
-import { Menu } from "lucide-react";
-import axios from "axios";
+import { Menu, ShieldCheck, LogOut } from "lucide-react";
+import { api, authHeaders } from "../api";
 import "./Chat.css";
 
 function Chat({ mode }) {
   const isGuest = mode === "guest";
-  const token = localStorage.getItem("access");
+  const navigate = useNavigate();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(""); // <- pour l’UI
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
-  /* ----------  FETCH / CREATE CHAT  ---------- */
   useEffect(() => {
     if (isGuest) {
-      setChats([{ id: "guest", title: "Conversation invité" }]);
+      setChats([{ id: "guest", title: "Analyse rapide" }]);
       setSelectedChatId("guest");
       setMessages([]);
       return;
     }
 
-    axios
-      .get("http://localhost:8000/api/chats/", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    api
+      .get("/chats/", { headers: authHeaders() })
       .then((res) => {
         setChats(res.data);
-        if (res.data.length) setSelectedChatId(res.data[0].id);
+        setSelectedChatId(res.data[0]?.id || null);
       })
       .catch(() => {
         localStorage.removeItem("access");
-        window.location.href = "/login";
+        localStorage.removeItem("refresh");
+        navigate("/login", { replace: true });
       });
-  }, [isGuest, token]);
+  }, [isGuest, navigate]);
 
-  /* ----------  FETCH MESSAGES  ---------- */
   useEffect(() => {
     if (!selectedChatId) {
       setMessages([]);
@@ -51,112 +49,96 @@ function Chat({ mode }) {
       return;
     }
 
-    axios
-      .get(`http://localhost:8000/api/chats/${selectedChatId}/messages/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setMessages(res.data));
-  }, [selectedChatId, isGuest, token]);
+    api
+      .get(`/chats/${selectedChatId}/messages/`, { headers: authHeaders() })
+      .then((res) => setMessages(res.data))
+      .catch(() =>
+        setErrorMessage("Impossible de charger les messages de cette conversation.")
+      );
+  }, [selectedChatId, isGuest]);
 
-  /* ----------  SEND MESSAGE  ---------- */
   const sendMessage = async (text) => {
     const trimmed = text.trim();
-    if (!trimmed) return;
-    setErrorMessage(""); // reset
+    if (!trimmed || isSending) return;
 
+    setErrorMessage("");
+    setIsSending(true);
     const userMsg = {
-      id: Date.now(),
+      id: `local-${Date.now()}`,
       sender: isGuest ? "Invité" : "Moi",
       content: trimmed,
     };
     setMessages((prev) => [...prev, userMsg]);
 
-    /* ----------  INVITÉ  ---------- */
-    if (isGuest) {
-      try {
-        const res = await axios.post("http://localhost:8000/api/chat/", {
-          prompt: trimmed,
-        });
-        const botMsg = {
-          id: Date.now() + 1,
-          sender: "Bot",
-          content: res.data.answer,
-        };
-        setMessages((prev) => [...prev, botMsg]);
-      } catch (err) {
-        const errorMsg = {
-          id: Date.now() + 1,
-          sender: "Bot",
-          content: "Erreur de réponse.",
-        };
-        setMessages((prev) => [...prev, errorMsg]);
-      }
-      return;
-    }
-
-    /* ----------  UTILISATEUR CONNECTÉ  ---------- */
     try {
-      // 1) Enregistrement du message utilisateur
-      console.log("Envoi user →", {
-        url: `http://localhost:8000/api/chats/${selectedChatId}/messages/`,
-        payload: { content: trimmed },
-        token,
-      });
+      if (isGuest) {
+        const { data } = await api.post("/chat/", { prompt: trimmed });
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `bot-${Date.now()}`,
+            sender: "Bot",
+            content: data.answer || "Aucune réponse générée.",
+          },
+        ]);
+        return;
+      }
 
-      const { data: savedUserMsg } = await axios.post(
-        `http://localhost:8000/api/chats/${selectedChatId}/messages/`,
+      await api.post(
+        `/chats/${selectedChatId}/messages/`,
         { content: trimmed },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: authHeaders() }
       );
-      // We don't append savedUserMsg here because it was already added optimistically above.
 
-      // 2) Appel au modèle
-      console.log("Envoi auto-reply →", {
-        url: `http://localhost:8000/api/chats/${selectedChatId}/auto-reply/`,
-        payload: { prompt: trimmed },
-        token,
-      });
-
-      const { data: botMsg } = await axios.post(
-        `http://localhost:8000/api/chats/${selectedChatId}/auto-reply/`,
+      const { data: botMsg } = await api.post(
+        `/chats/${selectedChatId}/auto-reply/`,
         { prompt: trimmed },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: authHeaders() }
       );
 
-      // 3) Affichage + enregistrement de la réponse
-      setMessages((prev) => [...prev, botMsg]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: botMsg.id || `bot-${Date.now()}`,
+          sender: botMsg.sender || "Bot",
+          content: botMsg.content || botMsg.answer || "Aucune réponse générée.",
+        },
+      ]);
     } catch (err) {
-      console.error("❌ Erreur détaillée :", {
-        status: err.response?.status,
-        statusText: err.response?.statusText,
-        data: err.response?.data,
-      });
-      console.error("❌ Erreur détaillée :");
-      console.dir(err.response?.data, { depth: null });
-
-      // Affiche l’erreur brute dans une alerte
-      alert(JSON.stringify(err.response?.data, null, 2));
+      setErrorMessage(
+        err.response?.data?.error ||
+          err.response?.data?.detail ||
+          "Le backend ne répond pas. Vérifie que Django est lancé sur le port 8000."
+      );
+    } finally {
+      setIsSending(false);
     }
   };
 
-  /* ----------  CREATE CHAT  ---------- */
   const createChat = (customTitle) => {
     const title = customTitle || "Nouveau chat";
     if (isGuest) {
       setMessages([]);
       return;
     }
-    axios
+    api
       .post(
-        "http://localhost:8000/api/chats/",
+        "/chats/",
         { title },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: authHeaders() }
       )
       .then((res) => {
         setChats((c) => [res.data, ...c]);
         setSelectedChatId(res.data.id);
         setMessages([]);
-      });
+      })
+      .catch(() => setErrorMessage("Impossible de créer une conversation."));
+  };
+
+  const logout = () => {
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    navigate("/");
   };
 
   return (
@@ -175,21 +157,36 @@ function Chat({ mode }) {
           <button
             className="sidebar-toggle"
             onClick={() => setSidebarOpen(!sidebarOpen)}
+            aria-label="Afficher ou masquer les conversations"
           >
             <Menu size={20} />
           </button>
-          <span className="title">{isGuest ? "Invité" : "Chat"}</span>
+          <div className="header-title">
+            <ShieldCheck size={18} />
+            <span>MitigLLM</span>
+          </div>
+          <div className="header-actions">
+            <span className="mode-pill">{isGuest ? "Mode invité" : "Session analyste"}</span>
+            {!isGuest && (
+              <button className="logout-button" onClick={logout} aria-label="Se déconnecter">
+                <LogOut size={17} />
+              </button>
+            )}
+          </div>
         </header>
 
-        {/* Optionnel : afficher l’erreur */}
         {errorMessage && (
-          <div style={{ color: "red", padding: "0.5rem" }}>
+          <div className="error-banner" role="alert">
             {errorMessage}
           </div>
         )}
 
-        <ChatWindow messages={messages} selectedChatId={selectedChatId} />
-        <MessageInput chatId={selectedChatId} onSend={sendMessage} />
+        <ChatWindow
+          messages={messages}
+          selectedChatId={selectedChatId}
+          isSending={isSending}
+        />
+        <MessageInput chatId={selectedChatId} onSend={sendMessage} disabled={isSending} />
       </main>
     </div>
   );

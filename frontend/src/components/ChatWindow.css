@@ -1,40 +1,110 @@
-/* src/components/ChatWindow.css */
 .chat-window {
   flex: 1;
-  padding: 24px 40px 80px;
+  min-height: 0;
+  padding: 28px clamp(16px, 4vw, 52px) 118px;
   overflow-y: auto;
-  background: linear-gradient(180deg, #0d0d10 0%, #111114 100%);
-  border-radius: 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .empty-state {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #a2a7f5;
-  font-size: 1.1rem;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 32px;
+  color: var(--muted);
+}
+
+.empty-state h2 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.empty-state p {
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
 .message {
-  max-width: 70%;
-  padding: 14px 18px;
-  border-radius: 18px;
-  font-size: 0.95rem;
+  width: min(760px, 86%);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 8px 24px rgba(22, 32, 29, 0.06);
   word-break: break-word;
+  line-height: 1.55;
 }
 
-/* Bot messages */
-.message:not(.me) {
-  background: rgba(214, 154, 222, 0.1); /* Light mauve */
-  color: #ffffff;
-}
-
-/* User messages */
 .message.me {
-  background: rgba(170, 96, 200, 0.7); /* Deeper mauve */
   align-self: flex-end;
+  background: var(--accent-soft);
+  border-color: #d8c4ff;
+}
+
+.message.loading {
+  width: fit-content;
+  min-width: 112px;
+}
+
+.message-sender {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.content a {
+  color: var(--accent-strong);
+}
+
+.content {
+  white-space: pre-wrap;
+}
+
+.typing {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  height: 22px;
+}
+
+.typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: typing-pulse 1s ease-in-out infinite;
+}
+
+.typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes typing-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@media (max-width: 640px) {
+  .message {
+    width: 100%;
+  }
 }

@@ -1,66 +1,94 @@
-:root {
-  --purple: #AA60C8;
-  --purple-dark: #D69ADE;
-}
-
 .sidebar-inner {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
+  gap: 14px;
+  padding: 18px;
+  color: #f4faf7;
 }
 
-.sidebar-new {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 14px;
-  border: none;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.1s;
-}
-
-.sidebar-new:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
-}
-
-.sidebar-inner ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto;
-}
-
-.sidebar-inner li {
+.sidebar-brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 4px 2px 12px;
+}
+
+.sidebar-brand svg {
+  color: #c084fc;
+}
+
+.sidebar-brand strong,
+.sidebar-brand span {
+  display: block;
+}
+
+.sidebar-brand strong {
+  font-size: 1rem;
+}
+
+.sidebar-brand span {
+  margin-top: 2px;
+  color: #9fb0aa;
+  font-size: 0.78rem;
+}
+
+.sidebar-new {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+  background: var(--sidebar-soft);
+  color: #fff;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.25s ease;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.sidebar-new:hover {
+  background: #261b35;
+  border-color: rgba(192, 132, 252, 0.48);
+}
+
+.sidebar-inner ul {
+  min-height: 0;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-inner li {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  border-radius: var(--radius);
+  color: #cbd7d2;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
 }
 
 .sidebar-inner li:hover {
   background: rgba(255, 255, 255, 0.07);
+  color: #fff;
 }
 
 .sidebar-inner li.active {
-  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-  box-shadow: 0 0 12px rgba(170, 96, 200, 0.4);
+  background: #f1e9ff;
+  color: #4c1d95;
 }
 
-.sidebar-inner li,
 .sidebar-inner li span {
-  color: #f0e6f8;
-}
-
-.sidebar-inner li.active,
-.sidebar-inner li.active span {
-  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

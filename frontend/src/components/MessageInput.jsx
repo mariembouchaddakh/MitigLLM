@@ -1,8 +1,9 @@
 // src/components/MessageInput.jsx
 import { useState, useRef, useEffect } from "react";
+import { SendHorizontal } from "lucide-react";
 import "./MessageInput.css";
 
-export default function MessageInput({ chatId, onSend }) {
+export default function MessageInput({ chatId, onSend, disabled = false }) {
   const [text, setText] = useState("");
   const textareaRef = useRef(null);
 
@@ -18,7 +19,6 @@ export default function MessageInput({ chatId, onSend }) {
     if (!trimmed) return;
 
     if (!chatId) {
-      alert("Aucun chat sélectionné !");
       return;
     }
 
@@ -45,13 +45,19 @@ export default function MessageInput({ chatId, onSend }) {
         ref={textareaRef}
         rows={1}
         className="message-input"
-        placeholder="Envoyer un message..."
+        placeholder="Ex: CVE-2024-..., SQL injection, buffer overflow..."
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={onKeyDown}
+        disabled={disabled}
       />
-      <button type="submit" className={`send-button ${text.trim() ? "visible" : ""}`}>
-        ➤
+      <button
+        type="submit"
+        className="send-button"
+        disabled={!text.trim() || !chatId || disabled}
+        aria-label="Envoyer"
+      >
+        <SendHorizontal size={18} />
       </button>
     </form>
   );

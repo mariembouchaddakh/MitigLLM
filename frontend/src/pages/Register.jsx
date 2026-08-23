@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { api } from "../api";
 import "./Register.css";
 
 function Register() {
@@ -16,7 +16,7 @@ function Register() {
     setSuccess("");
 
     try {
-      const res = await axios.post("http://localhost:8000/api/register/", {
+      await api.post("/register/", {
         username,
         password,
       });
@@ -24,7 +24,6 @@ function Register() {
       setUsername("");
       setPassword("");
 
-      // Optionnel : rediriger vers la page login après 2 secondes
       setTimeout(() => {
         navigate("/login");
       }, 2000);
@@ -39,8 +38,10 @@ function Register() {
 
   return (
     <div className="register-container">
-      <h2>Créer un compte</h2>
-      <form onSubmit={handleRegister}>
+      <form className="auth-card" onSubmit={handleRegister}>
+        <span className="auth-eyebrow">MitigLLM</span>
+        <h2>Créer un compte</h2>
+        <p>Crée une session pour conserver tes conversations et analyses.</p>
         <input
           type="text"
           placeholder="Nom d'utilisateur"
@@ -56,12 +57,12 @@ function Register() {
           required
         />
         <button type="submit">S'inscrire</button>
+        {success && <p className="auth-success">{success}</p>}
+        {error && <p className="auth-error">{error}</p>}
+        <p className="auth-switch">
+          Déjà un compte ? <Link to="/login">Se connecter</Link>
+        </p>
       </form>
-      {success && <p style={{ color: "green" }}>{success}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <p>
-        Déjà un compte ? <a href="/login">Se connecter</a>
-      </p>
     </div>
   );
 }

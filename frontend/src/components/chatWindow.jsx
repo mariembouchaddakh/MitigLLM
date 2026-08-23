@@ -18,11 +18,12 @@ const parseLinks = (text) => {
   });
 };
 
-export default function ChatWindow({ messages, selectedChatId }) {
+export default function ChatWindow({ messages, selectedChatId, isSending }) {
   if (!selectedChatId) {
     return (
       <div className="empty-state">
-        <h2>Aucun chat sélectionné !</h2>
+        <h2>Sélectionne une conversation</h2>
+        <p>Choisis un historique ou crée un nouveau fil d'analyse.</p>
       </div>
     );
   }
@@ -30,7 +31,8 @@ export default function ChatWindow({ messages, selectedChatId }) {
   if (messages.length === 0) {
     return (
       <div className="empty-state">
-        <h2>Comment puis-je vous aider ?</h2>
+        <h2>Décris une vulnérabilité ou une CVE</h2>
+        <p>MitigLLM proposera des mesures de mitigation structurées.</p>
       </div>
     );
   }
@@ -42,9 +44,20 @@ export default function ChatWindow({ messages, selectedChatId }) {
           key={msg.id}
           className={`message ${msg.sender === "Invité" || msg.sender === "Moi" ? "me" : ""}`}
         >
+          <span className="message-sender">{msg.sender || "MitigLLM"}</span>
           <div className="content">{parseLinks(msg.content)}</div>
         </div>
       ))}
+      {isSending && (
+        <div className="message loading">
+          <span className="message-sender">MitigLLM</span>
+          <div className="typing">
+            <span />
+            <span />
+            <span />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

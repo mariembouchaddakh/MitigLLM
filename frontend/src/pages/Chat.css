@@ -1,97 +1,158 @@
-/* src/pages/Chat.css */
 :root {
-  --primary-violet: #AA60C8;
-  --secondary-pink: #D69ADE;
-  --bg-dark: #0d0d10;
-  --bg-chat: #111114;
-  --radius-kimi: 24px;
-  --transition: .25s ease;
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-muted: #eef3f1;
+  --ink: #17201d;
+  --muted: #66736f;
+  --line: #d8e0dd;
+  --sidebar: #111816;
+  --sidebar-soft: #1b2622;
+  --accent: #7c3aed;
+  --accent-strong: #5b21b6;
+  --accent-soft: #f1e9ff;
+  --danger: #b42318;
+  --radius: 8px;
+  --shadow: 0 18px 50px rgba(22, 32, 29, 0.12);
+  --transition: 0.2s ease;
 }
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
-  background: var(--bg-dark);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
 }
 
 .app {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   overflow: hidden;
+  background: var(--bg);
 }
 
 .kimi-sidebar {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 260px;
-  height: 100vh;
-  background: rgba(170, 96, 200, 0.15); /* light violet */
-  backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(214, 154, 222, 0.3); /* pink border */
+  inset: 0 auto 0 0;
+  width: 286px;
+  background: var(--sidebar);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   transform: translateX(-100%);
   transition: transform var(--transition);
   z-index: 40;
-  overflow: hidden; 
+  overflow: hidden;
 }
+
 .kimi-sidebar.open {
   transform: translateX(0);
 }
 
 .main {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  background: var(--bg-chat);
-  border-radius: var(--radius-kimi);
-  margin: 8px;
+  min-height: 100vh;
+  margin-left: 0;
   transition: margin-left var(--transition);
-  overflow: hidden;
 }
+
 .main.with-sidebar {
-  margin-left: 260px;
+  margin-left: 286px;
 }
 
 .header {
   height: 64px;
+  flex: 0 0 64px;
   display: flex;
   align-items: center;
+  gap: 16px;
   padding: 0 24px;
-  background: rgba(214, 154, 222, 0.12); /* soft pink */
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid var(--line);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0 0 var(--radius-kimi) var(--radius-kimi);
-  position: relative;
 }
 
-.sidebar-toggle {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
+.sidebar-toggle,
+.logout-button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  background: var(--surface);
+  color: var(--ink);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background var(--transition), border-color var(--transition);
 }
 
-.sidebar-toggle:hover {
-  background: rgba(255, 255, 255, 0.2);
+.sidebar-toggle:hover,
+.logout-button:hover {
+  background: var(--surface-muted);
+  border-color: #b8c5c0;
 }
 
-.title {
-  flex: 1;
-  text-align: center;
-  font-weight: 600;
-  font-size: 1.05rem;
-  color: var(--secondary-pink);
+.header-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--ink);
 }
 
-/* Responsive : réduit la marge sur mobile */
-@media (max-width: 768px) {
+.header-title svg {
+  color: var(--accent);
+}
+
+.header-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mode-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.error-banner {
+  margin: 14px 24px 0;
+  padding: 12px 14px;
+  border: 1px solid #f1b8b3;
+  border-radius: var(--radius);
+  background: #fff4f2;
+  color: var(--danger);
+  font-size: 0.92rem;
+}
+
+@media (max-width: 820px) {
+  .main.with-sidebar {
+    margin-left: 0;
+  }
+
+  .kimi-sidebar {
+    box-shadow: var(--shadow);
+  }
+
   .header {
-    padding: 0 16px;
+    padding: 0 14px;
+  }
+
+  .mode-pill {
+    display: none;
   }
 }

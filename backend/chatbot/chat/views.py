@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotAuthenticated
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -42,8 +43,6 @@ class UserChatsView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         if not self.request.user or not self.request.user.is_authenticated:
             raise NotAuthenticated("User must be authenticated.")
-        print("🟡 Creating chat for user:", self.request.user)
-        print("🟡 Data:", self.request.data)
         serializer.save(user=self.request.user)
 
 # ---------------- MESSAGES ----------------
@@ -76,7 +75,6 @@ class ChatWithModelView(APIView):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def auto_reply_view(request, chat_id):
-    print("🔥 auto_reply_view was CALLED")
     prompt = request.data.get("prompt", "").strip()
     if not prompt:
         return Response({"error": "Prompt manquant"}, status=status.HTTP_400_BAD_REQUEST)
